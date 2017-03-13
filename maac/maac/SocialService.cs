@@ -6,7 +6,7 @@ using System.Net;
 using System.Threading.Tasks;
 using System.Text;
 using System.IO;
-
+using System.Linq;
 using System.Runtime.Serialization.Json;
 
 namespace maac
@@ -42,13 +42,15 @@ namespace maac
         private async Task<TweetsCollection> fetchResults(TwitAuthenticateResponse authentication, string searchTerm)
         {
             var httpClient = new HttpClient();
-            const string baseAddress = "https://api.twitter.com/1.1/search/tweets.json?q=";
+            const string baseAddress = "https://api.twitter.com/1.1/search/tweets.json?q={0}&count=50";
             string encodedSearchTerm = WebUtility.HtmlEncode(searchTerm);
-            HttpRequestMessage requestResults = new HttpRequestMessage(HttpMethod.Get, baseAddress + encodedSearchTerm);
+            HttpRequestMessage requestResults = new HttpRequestMessage(HttpMethod.Get, String.Format(baseAddress,encodedSearchTerm));
             requestResults.Headers.Add("Authorization", authentication.token_type + " " + authentication.access_token);
             var response = await httpClient.SendAsync(requestResults);
             string resultsAsJson = await response.Content.ReadAsStringAsync();
             var deserializedResults = deserializeObject<TweetsCollection>(resultsAsJson);
+            deserializedResults.biggestTweetId = deserializedResults.searchResults.Max(t => t.id);
+            deserializedResults.smallestTweetId = deserializedResults.searchResults.Min(t => t.id);
             return deserializedResults;
         }
 

@@ -6,6 +6,8 @@ using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 using Android.OS;
+using Android.Graphics.Drawables;
+using Android.Graphics;
 
 namespace maac.Droid
 {
@@ -18,6 +20,7 @@ namespace maac.Droid
         public static SocialService twitterServices = new SocialService();
         protected override void OnCreate(Bundle bundle)
         {
+            ActionBar.SetBackgroundDrawable(new ColorDrawable(new Color(0x08,0x8d,0xe1)));
             base.OnCreate(bundle);
             startSearchToast = Toast.MakeText(this, "Now searching", ToastLength.Short);
             
@@ -43,7 +46,7 @@ namespace maac.Droid
             TweetItemAdapter adapter =new TweetItemAdapter(this, Resource.Layout.listitem, tweetsToDisplay.searchResults.ToList<Tweet>());
             
             tweetViewer.Adapter=adapter;
-
+            
         }
     }
 

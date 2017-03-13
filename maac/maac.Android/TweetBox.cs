@@ -50,21 +50,11 @@ namespace maac.Droid
                     image.LoadUrl(tweet.user.imageUrl);
                 }
             }
+            
             return returnView;
 
 
         }
-        private Task<Bitmap> GetBitmap(string bitmapUrl)
-        {
-            try
-            {
-                URL url = new URL(bitmapUrl);
-                Task<Bitmap> imageBitmap = BitmapFactory.DecodeStreamAsync(url.OpenConnection().InputStream);
-                return imageBitmap;
-            }
-            catch (Exception ex) {
-                return null;
-            }
-        }
+
     }
 }

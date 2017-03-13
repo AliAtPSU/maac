@@ -15,6 +15,8 @@ namespace maac
     [DataContract]
     public class TweetsCollection
     {
+        public long smallestTweetId { get; set; }
+        public long biggestTweetId { get; set; }
         [DataMember(Name = "statuses")]
         public IEnumerable<Tweet> searchResults;
     }
@@ -27,6 +29,10 @@ namespace maac
 
         [DataMember(Name = "text")]
         public string text { get; set; }
+
+        [DataMember(Name ="Id")]
+        public long id { get; set; }
+
     }
     [DataContract]
     public class User
