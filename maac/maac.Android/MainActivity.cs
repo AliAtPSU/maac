@@ -37,9 +37,11 @@ namespace maac.Droid
 
         private async void B_Click(object sender, EventArgs e)
         {
-            TweetsCollection tweetsToDisplay = await twitterServices.search(searchTerm.Text);
-            TweetItemAdapter adapter =new TweetItemAdapter(this, Resource.Layout.listitem, tweetsToDisplay.searchResults.ToList<Tweet>());
             startSearchToast.Show();
+            TweetsCollection tweetsToDisplay = await twitterServices.search(searchTerm.Text);
+            
+            TweetItemAdapter adapter =new TweetItemAdapter(this, Resource.Layout.listitem, tweetsToDisplay.searchResults.ToList<Tweet>());
+            
             tweetViewer.Adapter=adapter;
 
         }

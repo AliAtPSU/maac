@@ -7,6 +7,8 @@ using Android;
 using Java.Net;
 using Android.Graphics;
 using Java.Lang;
+using System.Threading.Tasks;
+using Android.Webkit;
 
 namespace maac.Droid
 {
@@ -33,7 +35,7 @@ namespace maac.Droid
                 TextView message = (TextView)returnView.FindViewById(Resource.Id.message);
                 TextView username = (TextView)returnView.FindViewById(Resource.Id.username);
 
-                ImageView image = (ImageView)returnView.FindViewById(Resource.Id.avatar);
+                WebView image = (WebView)returnView.FindViewById(Resource.Id.avatar);
                 if (message != null)
                 {
                     message.Text = tweet.text;
@@ -45,21 +47,24 @@ namespace maac.Droid
 
                 if (image != null)
                 {
-                    image.SetImageBitmap(GetBitmap(tweet.user.imageUrl));
+                    image.LoadUrl(tweet.user.imageUrl);
                 }
             }
             return returnView;
 
 
         }
-        private Bitmap GetBitmap(string bitmapUrl)
+        private Task<Bitmap> GetBitmap(string bitmapUrl)
         {
             try
             {
                 URL url = new URL(bitmapUrl);
-                return BitmapFactory.DecodeStream(url.OpenConnection().InputStream);
+                Task<Bitmap> imageBitmap = BitmapFactory.DecodeStreamAsync(url.OpenConnection().InputStream);
+                return imageBitmap;
             }
-            catch (Exception ex) { return null; }
+            catch (Exception ex) {
+                return null;
+            }
         }
     }
 }
