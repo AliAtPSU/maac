@@ -32,6 +32,26 @@
             android:layout_marginLeft="0.0dp"
             android:layout_marginBottom="0.0dp" />
     </LinearLayout>
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/linearLayout4">
+        <Button
+            android:id="@+id/newerTweetsButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Newer"
+            android:layout_weight="1"
+            android:visibility="invisible" />
+        <Button
+            android:id="@+id/olderTweetsButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Older"
+            android:layout_weight="1"
+            android:visibility="invisible" />
+    </LinearLayout>
     <GridView
         android:minWidth="25px"
         android:minHeight="25px"

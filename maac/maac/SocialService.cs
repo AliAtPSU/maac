@@ -13,38 +13,30 @@ namespace maac
 {
     public class SocialService
     {
-        HttpClient client = new HttpClient();
+
         const string OAUTH_CONSUMER_KEY = "pVzGTy1Pgu9yMiurxyoL3eHOH";
         const string OAUTH_CONSUMER_SECRET = "pqkz9fImaM3U4Tv7BWL4z5JhWpnhKooa95jOzvgvzWzmo4GVcA";
         //Token URL
         const string oauth_url = "https://api.twitter.com/oauth2/token";
-        HttpRequestMessage authorizationRequest = new HttpRequestMessage(HttpMethod.Post, oauth_url);
+
         public SocialService()
         {
-            string headerFormat = "Basic {0}";
-            var authorizationHeader = string.Format(headerFormat,
-                Convert.ToBase64String(Encoding.UTF8.GetBytes(Uri.EscapeDataString(OAUTH_CONSUMER_KEY) + ":" +
-                Uri.EscapeDataString((OAUTH_CONSUMER_SECRET)))
-            ));
-            authorizationRequest.Content = new StringContent("grant_type=client_credentials", Encoding.UTF8, "application/x-www-form-urlencoded");
-            //  request.Content.Headers.ContentType.MediaType = "application/x-www-form-urlencoded;charset=UTF-8";
-            authorizationRequest.Headers.Add("Authorization", authorizationHeader);
-            authorizationRequest.Headers.TryAddWithoutValidation("Content-Type", "application/x-www-form-urlencoded;charset=UTF-8");
+
+
         }
 
-        public async Task<TweetsCollection> search(string searchTerm)
+        public async Task<TweetsCollection> search(string searchTerm,long? id,bool? searchOlder)
         {
             TwitAuthenticateResponse authentication = await generateAuthentication();
-            var searchResultsToDisplay = await fetchResults(authentication, searchTerm);
+            var searchResultsToDisplay = await fetchResults(authentication, searchTerm,id,searchOlder);
             return searchResultsToDisplay;
         }
 
-        private async Task<TweetsCollection> fetchResults(TwitAuthenticateResponse authentication, string searchTerm)
+        private async Task<TweetsCollection> fetchResults(TwitAuthenticateResponse authentication, string searchTerm,long? id, bool? searchOlder)
         {
             var httpClient = new HttpClient();
-            const string baseAddress = "https://api.twitter.com/1.1/search/tweets.json?q={0}&count=50";
-            string encodedSearchTerm = WebUtility.HtmlEncode(searchTerm);
-            HttpRequestMessage requestResults = new HttpRequestMessage(HttpMethod.Get, String.Format(baseAddress,encodedSearchTerm));
+            StringBuilder baseAddress = buildWebAddressString(searchTerm, id, searchOlder);
+            HttpRequestMessage requestResults = new HttpRequestMessage(HttpMethod.Get, baseAddress.ToString());
             requestResults.Headers.Add("Authorization", authentication.token_type + " " + authentication.access_token);
             var response = await httpClient.SendAsync(requestResults);
             string resultsAsJson = await response.Content.ReadAsStringAsync();
@@ -52,6 +44,25 @@ namespace maac
             deserializedResults.biggestTweetId = deserializedResults.searchResults.Max(t => t.id);
             deserializedResults.smallestTweetId = deserializedResults.searchResults.Min(t => t.id);
             return deserializedResults;
+        }
+
+        private static StringBuilder buildWebAddressString(string searchTerm, long? id, bool? searchOlder)
+        {
+            string encodedSearchTerm = WebUtility.HtmlEncode(searchTerm);
+            StringBuilder baseAddress = new StringBuilder(String.Format("https://api.twitter.com/1.1/search/tweets.json?q={0}&count=50", encodedSearchTerm));
+            if (searchOlder != null)
+            {
+                if (searchOlder == true)
+                {
+                    baseAddress.Append("&max_id=" + (id - 1));
+                }
+                else
+                {
+                    baseAddress.Append("&since_id=" + (id - 1));
+                }
+            }
+
+            return baseAddress;
         }
 
         private async Task<TwitAuthenticateResponse> generateAuthentication()
@@ -63,9 +74,19 @@ namespace maac
 
         private async Task<HttpResponseMessage> sendAuthenticationRequestAndReceiveResponse()
         {
+            string headerFormat = "Basic {0}";
+            var authorizationHeader = string.Format(headerFormat,
+                Convert.ToBase64String(Encoding.UTF8.GetBytes(Uri.EscapeDataString(OAUTH_CONSUMER_KEY) + ":" +
+                Uri.EscapeDataString((OAUTH_CONSUMER_SECRET)))
+            ));
+            HttpClient client = new HttpClient();
+            HttpRequestMessage authorizationRequest = new HttpRequestMessage(HttpMethod.Post, oauth_url);
+            authorizationRequest.Content = new StringContent("grant_type=client_credentials", Encoding.UTF8, "application/x-www-form-urlencoded");
+            //  request.Content.Headers.ContentType.MediaType = "application/x-www-form-urlencoded;charset=UTF-8";
+            authorizationRequest.Headers.Add("Authorization", authorizationHeader);
+            authorizationRequest.Headers.TryAddWithoutValidation("Content-Type", "application/x-www-form-urlencoded;charset=UTF-8");
             HttpResponseMessage authenticationResponse = new HttpResponseMessage();
             authenticationResponse = await client.SendAsync(authorizationRequest);
-            string content = await authenticationResponse.Content.ReadAsStringAsync();
             return authenticationResponse;
         }
 

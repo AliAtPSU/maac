@@ -72,8 +72,17 @@ namespace maac.Droid
 			// aapt resource value: 0x7f050004
 			public const int linearLayout3 = 2131034116;
 			
+			// aapt resource value: 0x7f050007
+			public const int linearLayout4 = 2131034119;
+			
 			// aapt resource value: 0x7f050002
 			public const int message = 2131034114;
+			
+			// aapt resource value: 0x7f050008
+			public const int newerTweetsButton = 2131034120;
+			
+			// aapt resource value: 0x7f050009
+			public const int olderTweetsButton = 2131034121;
 			
 			// aapt resource value: 0x7f050006
 			public const int searchButton = 2131034118;
@@ -81,8 +90,8 @@ namespace maac.Droid
 			// aapt resource value: 0x7f050005
 			public const int searchTerm = 2131034117;
 			
-			// aapt resource value: 0x7f050007
-			public const int tweetView = 2131034119;
+			// aapt resource value: 0x7f05000a
+			public const int tweetView = 2131034122;
 			
 			// aapt resource value: 0x7f050001
 			public const int username = 2131034113;
