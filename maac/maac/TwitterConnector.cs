@@ -11,7 +11,7 @@ using System.Runtime.Serialization.Json;
 
 namespace maac
 {
-    public class SocialService
+    public sealed class TwitterConnector:SocialServiceConnector
     {
 
         const string OAUTH_CONSUMER_KEY = "pVzGTy1Pgu9yMiurxyoL3eHOH";
@@ -19,20 +19,20 @@ namespace maac
         //Token URL
         const string oauth_url = "https://api.twitter.com/oauth2/token";
 
-        public SocialService()
+        public TwitterConnector()
         {
 
 
         }
 
-        public async Task<TweetsCollection> search(string searchTerm,long? id,bool? searchOlder)
+        public override async Task<TweetsCollection> search(string searchTerm,long? id,bool? searchOlder)
         {
             TwitAuthenticateResponse authentication = await generateAuthentication();
             var searchResultsToDisplay = await fetchResults(authentication, searchTerm,id,searchOlder);
             return searchResultsToDisplay;
         }
 
-        private async Task<TweetsCollection> fetchResults(TwitAuthenticateResponse authentication, string searchTerm,long? id, bool? searchOlder)
+        protected override async Task<TweetsCollection> fetchResults(TwitAuthenticateResponse authentication, string searchTerm,long? id, bool? searchOlder)
         {
             var httpClient = new HttpClient();
             StringBuilder baseAddress = buildWebAddressString(searchTerm, id, searchOlder);
@@ -46,7 +46,7 @@ namespace maac
             return deserializedResults;
         }
 
-        private static StringBuilder buildWebAddressString(string searchTerm, long? id, bool? searchOlder)
+        protected override StringBuilder buildWebAddressString(string searchTerm, long? id, bool? searchOlder)
         {
             string encodedSearchTerm = WebUtility.HtmlEncode(searchTerm);
             StringBuilder baseAddress = new StringBuilder(String.Format("https://api.twitter.com/1.1/search/tweets.json?q={0}&count=50", encodedSearchTerm));
@@ -65,14 +65,14 @@ namespace maac
             return baseAddress;
         }
 
-        private async Task<TwitAuthenticateResponse> generateAuthentication()
+        protected override async Task<TwitAuthenticateResponse> generateAuthentication()
         {
             HttpResponseMessage response = await sendAuthenticationRequestAndReceiveResponse();
             var deserializedAuthentication = deserializeObject<TwitAuthenticateResponse>(await response.Content.ReadAsStringAsync());
             return deserializedAuthentication;
         }
 
-        private async Task<HttpResponseMessage> sendAuthenticationRequestAndReceiveResponse()
+        protected override async Task<HttpResponseMessage> sendAuthenticationRequestAndReceiveResponse()
         {
             string headerFormat = "Basic {0}";
             var authorizationHeader = string.Format(headerFormat,
@@ -90,7 +90,7 @@ namespace maac
             return authenticationResponse;
         }
 
-        private static Type deserializeObject<Type>(string json)
+        protected override Type deserializeObject<Type>(string json)
         {
             MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(json));
             DataContractJsonSerializer deserializer = new DataContractJsonSerializer(typeof(Type));

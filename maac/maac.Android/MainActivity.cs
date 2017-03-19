@@ -20,7 +20,7 @@ namespace maac.Droid
         Button olderTweetsButton;
         Button newerTweetsButton;
         TweetsCollection tweetsToDisplay;
-        public static SocialService twitterServices = new SocialService();
+        public static TwitterConnector twitterServices = new TwitterConnector();
         protected override void OnCreate(Bundle bundle)
         {
             ActionBar.SetBackgroundDrawable(new ColorDrawable(new Color(0x08, 0x8d, 0xe1)));
@@ -64,17 +64,16 @@ namespace maac.Droid
 
         private async void B_Click(object sender, EventArgs e)
         {
-            try
-            {
+
                 startSearchToast.Show();
                 tweetsToDisplay = await twitterServices.search(searchTerm.Text, null, null);
                 TweetItemAdapter adapter = new TweetItemAdapter(this, Resource.Layout.listitem, tweetsToDisplay.searchResults.ToList<Tweet>());
 
                 tweetViewer.Adapter = adapter;
-            }catch(Exception ex)
-            {
+                olderTweetsButton.Visibility = ViewStates.Visible;
+                newerTweetsButton.Visibility = ViewStates.Visible;
+            
 
-            }
 
 
 
